@@ -1,0 +1,39 @@
+openapi: 3.0.0"
+info:
+  title: Color API
+  description: Return color palette
+  version: 0.0.1
+servers:
+  - url: levii-python37-test.appspot.com
+components:
+  parameters:
+    paletteID:
+      name: paletteID
+      in: path
+      schema:
+        type: string
+        enum: ['all', 'rgb', 'cmyk']
+        default: all
+      required: true
+  schemas:
+    Palette:
+      type: object
+      properties:
+        palette_name:
+          type: array
+          items:
+            $ref: '#/components/schemas/Color'
+    Color:
+      type: string
+paths:
+  /colors/{paletteID}:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/paletteID'
+      responses:
+        200:
+          description: A list of colors (may be filtered by palette)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palette'
