@@ -13,11 +13,15 @@
 # limitations under the License.
 
 # [START gae_python37_app]
-from flask import Flask, jsonify
+from datetime import datetime
+
+from flask import Flask, jsonify, request
 from flasgger import Swagger
 from flasgger import swag_from
 from flasgger import validate
 
+from framework.app.service.task import TaskEnqueueService
+from framework.domain.entity.task import Task
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
@@ -29,6 +33,7 @@ swagger = Swagger(app)
 def hello():
     """Return a friendly HTTP greeting."""
     return 'Hello World!'
+
 
 @app.route('/colors/<palette>/')
 @swag_from('colors.yml')
@@ -45,6 +50,56 @@ def colors(palette):
     # Response Schema のチェック
     validate(result, 'Palette', 'colors.yml')
     return jsonify(result)
+
+
+class HelloTask(Task):
+    URL = '/task/handle'
+
+    def __init__(
+            self,
+            message: str,
+            schedule_time: datetime = None,
+            in_seconds: int = None
+    ):
+        payload = {'message': message}
+
+        super(HelloTask, self).__init__(
+            payload=payload,
+            schedule_time=schedule_time,
+            in_seconds=in_seconds
+        )
+
+    @property
+    def message(self):
+        return self.payload['message']
+
+
+@app.route('/task/add')
+def task():
+    t = HelloTask(
+        message='hello',
+        in_seconds=60
+    )
+
+    queue = 'test-queue'
+    # 本来なら project と location は自動取得できるはず
+    project = 'levii-python37-test'
+    location = 'asia-northeast1'
+
+    response = TaskEnqueueService(
+        task=t, queue=queue, project=project, location=location
+    ).execute()
+
+    print('Created task {}'.format(response.name))
+    return 'ok'
+
+
+@app.route('/task/handle', methods=['POST'])
+def task_handler():
+    """Log the request payload."""
+    t = HelloTask.load(request.get_data(as_text=True))
+    print('Received task with payload: {}'.format(t.message))
+    return 'Printed task payload: {}'.format(t.message)
 
 
 if __name__ == '__main__':
