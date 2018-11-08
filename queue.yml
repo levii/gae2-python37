@@ -1,0 +1,18 @@
+queue:
+
+# 実験的にパラメータを全て明示的に指定している
+# https://cloud.google.com/appengine/docs/standard/python/config/queueref
+- name: test-queue
+  mode: push
+  # bucket_size, rate, max_concurrent_requests の関係性は、以下の Stackover Flow がわかりやすい
+  # https://stackoverflow.com/questions/47209759/gcp-documentation-task-queue-bucket-size-and-rate
+  rate: 1/s
+  bucket_size: 10
+  max_concurrent_requests: 5
+  retry_parameters:
+    # task_retry_limit を指定しなければ無限に retry される
+    # task_retry_limit: 1000
+    task_age_limit: 30d
+    min_backoff_seconds: 60
+    max_backoff_seconds: 86400
+    max_doublings: 4
