@@ -5,13 +5,13 @@ Google App Engine 2 向けの Python 3.7 フレームワークの検証用レポ
 # 方針
 Flask を利用した軽量フレームワークをベースにしつつ、
 
-- Open API Specification を使った API Request/Response のバリデーションを検証
-- Open API Specification を利用して Cloud Endpoints による API 公開の検証
-- 移行を見据えた Python 3.7 での Cloud Datastore の検証
-- ファイルアップロード周りの検証
-- Firebase などを利用した Authentication の検証
-- API ベースでのテスト・カバレッジ計測ツールの検証
-- DI コンテナの検証
+- [x] Open API Specification を使った API Request/Response のバリデーションを検証
+- [x] Open API Specification を利用して Cloud Endpoints による API 公開の検証 ← まだ早かった
+- [ ] 移行を見据えた Python 3.7 での Cloud Datastore の検証
+- [ ] ファイルアップロード周りの検証
+- [x] Firebase などを利用した Authentication の検証
+- [ ] API ベースでのテスト・カバレッジ計測ツールの検証
+- [ ] DI コンテナの検証
 
 を行う。
 
@@ -81,3 +81,11 @@ CLOUDSDK_PYTHON=~/.pyenv/versions/2.7.15/bin/python
 ```
 
 direnv で `.envrc` に設定を書いておくと楽(.envrc は git から除外する設定になっています)。
+
+# 認証
+
+認証には [Cloud Identity-Aware Proxy](https://cloud.google.com/iap/)(IAP) を利用します。
+
+IAP を利用すると GAE のサービス単位で Google Account によるアクセス制御が可能になります。
+
+パス単位での制御はできないため、認証範囲が異なる場合はサービス単位で分けてください(管理画面などは別サービスとして作る)。
