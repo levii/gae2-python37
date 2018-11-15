@@ -37,6 +37,8 @@ $ python main.py
 
 ## Cloud Endpoints
 
+※2018/11 時点では Cloud Endpoints は GAE 2nd に対応していないため利用できない、無念
+
 Cloud Endpoints は Open API 2.0 にしか対応していないため(2018/10)、
 3.0 系のスキーマをコンバートしてデプロイしないといけない。
 
@@ -69,3 +71,13 @@ $ pip install -r requirements.testing.txt
 
 $ pytest main_test.py
 ```
+
+## デプロイ
+
+gloud は python 2 を利用しているため、python 3 系と共存させる場合、`CLOUDSDK_PYTHON` 環境変数で python 2 のバイナリを指定する必要がある
+
+```sh
+CLOUDSDK_PYTHON=~/.pyenv/versions/2.7.15/bin/python
+```
+
+direnv で `.envrc` に設定を書いておくと楽(.envrc は git から除外する設定になっています)。
